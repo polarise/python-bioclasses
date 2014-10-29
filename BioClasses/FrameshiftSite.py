@@ -20,8 +20,16 @@ class FrameshiftSite( object ):
 				self.designation = "+1"
 			else:
 				self.designation = "-"
+		elif desig == "+1":
+			self.designation = "+1"
+		elif desig == "+2":
+			self.designation = "-1"
+		elif desig == "-1":
+			self.designation = "-1"
+		elif desig == "-2":
+			self.designation = "+1"
 		else:
-			self.designation = desig
+			self.designation = "-"
 		self.signal = signal
 		self.distance_from_5prime = length - self.position
 		self.position_score_f = position_score

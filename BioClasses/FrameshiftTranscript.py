@@ -30,8 +30,8 @@ class FrameshiftTranscript( object ):
 		output_str = "Transcript: %s of length %s\n" % ( self.name, self.length )
 		i = 1
 		for pos,FS in self.frameshift_sites.iteritems():
-			output_str += "Frameshift #%s: %s at %s (pos-score = %s).\n" % ( i, \
-				FS.signal, FS.position, FS.position_score )
+			output_str += "Frameshift #%s: %s (desig: %s) at %s (pos-score = %s).\n" % ( i, \
+				FS.signal, FS.designation, FS.position, FS.position_score )
 			i += 1
 		
 		return output_str
@@ -41,8 +41,8 @@ class FrameshiftTranscript( object ):
 		i = 1
 		for pos,FS in self.frameshift_sites.iteritems():
 			if p0 <= FS.posscore2proportion( self.length ) <= p1 and FS.radians_vector_f[0] <= theta0:
-				output_str += "Frameshift #%s: %s at %s (pos-score = %s).\n" % ( i, \
-					FS.signal, FS.position, FS.position_score )
+				output_str += "Frameshift #%s: %s (desig: %s) at %s (pos-score = %s).\n" % ( i, \
+					FS.signal, FS.designation, FS.position, FS.position_score )
 			i += 1
 		
 		return output_str
