@@ -26,6 +26,14 @@ class Transcript( object ):
 	
 	#=============================================================================
 	
+	def is_protein_coding( self ):
+		if self.source == "protein_coding":
+			return True
+		else:
+			return False
+	
+	#=============================================================================
+	
 	def region_str( self, zero_based=False ):
 		if zero_based:
 			return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start ) - 1, int( self.end ) - 1 ]))
@@ -75,6 +83,54 @@ class Transcript( object ):
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start_codon ), int( self.end ) - 1] ))
 			elif not zero_based:
 				return "%s:%s-%s" % ( self.seqname, str( int( self.start_codon ) + 1 ), self.end )
+	
+	#=============================================================================
+	
+	def length_of_spliced_5utr( self ):
+		"""
+		return the spliced length of the 5'UTR
+		"""
+		spliced_length = 0
+		
+		if self.start_codon is not None:
+			if self.strand == "+":
+				"""
+				we are only interested in exonic regions up to the start codon
+				there are therefore two types of exons:
+				(i)		those that wholly lie on the left of the start codon
+				(ii)	those that cover the start codon
+				
+				This algorithm relies on exon_number as the index.
+				exon_number increases in the direction of transcription.
+				But exon_number is NOT sorted!!!
+				"""
+				for exon_number in xrange( 1, len( self.exons )):
+					E = self.exons[exon_number]
+					# case (i)
+					if int( E.start ) < int( self.start_codon ) and int( E.end ) < int( self.start_codon ):
+						spliced_length += E.length()
+					# case (ii)
+					elif int( E.start ) < int( self.start_codon ) and int( E.end ) > int( self.start_codon ):
+						spliced_length += int( self.start_codon ) - int( E.start )
+					# break on all other cases
+					else:
+						break
+					# spliced_length will be zero (0)
+			elif self.strand == "-":
+				for exon_number in xrange( 1, len( self.exons )):
+					E = self.exons[exon_number]
+					# case (i)
+					if int( E.start ) > int( self.start_codon ): # the 3' end doesn't matter in minus strand genes
+						spliced_length += E.length()
+					# case (ii)
+					elif int( E.start ) < int( self.start_codon ) and int( E.end ) > int( self.start_codon ):
+						spliced_length += int( E.end ) - int( self.start_codon )
+					# break on all other cases
+					else:
+						break
+					# spliced_length will be zero (0)					
+		
+		return spliced_length
 	
 	#=============================================================================
 	

@@ -54,4 +54,5 @@ test/test_Tree2.py
 test/test_frameshift_signals.py
 test/test_paths.py
 test/test_peakfinder.py
+test/test_spliced_5UTR.py
 test/test_subSequence.py

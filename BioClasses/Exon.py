@@ -14,10 +14,14 @@ class Exon( object ):
 		self.seqname = record.seqname
 		self.start = record.start
 		self.end = record.end
+		self.strand = record.strand
 	
 	def region_str( self, zero_based=False ):
 		if zero_based:
 			return "%s:%s-%s" % ( self.seqname, str( int( self.start ) + 1 ), str( int( self.end ) + 1 ))
 		else:
 			return "%s:%s-%s" % ( self.seqname, self.start, self.end )
+	
+	def length( self ):
+		return int( self.end ) - int( self.start )
 		
