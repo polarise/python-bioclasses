@@ -59,7 +59,7 @@ class Transcript( object ):
 	def get_cds_length( self ):
 		length = 0
 		for E in self.CDS:
-			length += ( int( E.end ) - int( E.start ) + 1 )
+			length += E.length() #( int( E.end ) - int( E.start ) + 1 )
 		return length			
 	
 	#=============================================================================
@@ -120,11 +120,11 @@ class Transcript( object ):
 				for exon_number in xrange( 1, len( self.exons )):
 					E = self.exons[exon_number]
 					# case (i)
-					if int( E.start ) > int( self.start_codon ): # the 3' end doesn't matter in minus strand genes
+					if int( E.start ) > int( self.start_codon ) + 2: # the 3' end doesn't matter in minus strand genes
 						spliced_length += E.length()
 					# case (ii)
-					elif int( E.start ) < int( self.start_codon ) and int( E.end ) > int( self.start_codon ):
-						spliced_length += int( E.end ) - int( self.start_codon )
+					elif int( E.start ) < int( self.start_codon ) + 2 and int( E.end ) > int( self.start_codon ) + 2:
+						spliced_length += int( E.end ) - int( self.start_codon ) - 2
 					# break on all other cases
 					else:
 						break

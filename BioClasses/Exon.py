@@ -23,5 +23,5 @@ class Exon( object ):
 			return "%s:%s-%s" % ( self.seqname, self.start, self.end )
 	
 	def length( self ):
-		return int( self.end ) - int( self.start )
+		return int( self.end ) - int( self.start ) + 1
 		
