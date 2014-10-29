@@ -59,17 +59,18 @@ class Gene( object ):
 			if P.is_complete():
 				complete_PCT.append( P )
 		
-		if len( complete_PCT ) > 0:
-			return complete_PCT
-		else:
-			return None
+		return complete_PCT
 	
-	def get_equal_cds( self ):
-		PCT = self.get_protein_coding() # protein coding transcripts
+	def get_equal_cds( self, best=False ):
+		"""
+		if best=True then return the set of txs in the modal class of txs with equal CDS
+		otherwise return all that share
+		"""
+		CPCT = self.get_complete_protein_coding() # complete protein coding transcript objects
 		
 		# we get the distribution of complete transcripts by (start_codon, stop_codon)
 		start_stop_distr = dict()
-		for P in PCT:
+		for P in CPCT:
 			if P.is_complete():
 				start_stop = P.start_codon,P.stop_codon
 				if start_stop not in start_stop_distr:
@@ -83,18 +84,28 @@ class Gene( object ):
 		# pick the start_stop with the most transcripts
 		equal_cds_transcripts = set()
 		if len( start_stop_distr ) > 0:
-			start_stop_best = start_stop_distr.keys()[0]
-			start_stop_max = start_stop_distr[start_stop_distr.keys()[0]] # guess that first is max
+			if best: # return the modal class
+				start_stop_best = start_stop_distr.keys()[0] # initialise the best as the first
+				start_stop_max = start_stop_distr[start_stop_distr.keys()[0]] # guess that first is max
+			
+				for start_stop,start_stop_count in start_stop_distr.iteritems():
+					if start_stop_count > start_stop_max:
+						start_stop_best = start_stop
+					
+				# now get the transcripts corresponding
+				best_start, best_stop = start_stop
+				for P in CPCT: # transcript objects
+					if P.start_codon == best_start and P.stop_codon == best_stop:
+						equal_cds_transcripts.add( P )
+			else: # return all classes except those with only one transcript
+				for P in CPCT:
+					try:
+						count = start_stop_distr[P.start_codon,P.stop_codon]
+					except KeyError:
+						count = 0
+					if count > 1:
+						equal_cds_transcripts.add( P )
 		
-			for start_stop,start_stop_count in start_stop_distr.iteritems():
-				if start_stop_count > start_stop_max:
-					start_stop_best = start_stop
-				
-			# now get the transcripts corresponding
-			best_start, best_stop = start_stop
-			for P in PCT:
-				if P.start_codon == best_start and P.stop_codon == best_stop:
-					equal_cds_transcripts.add( P )
 		if len( equal_cds_transcripts ) > 1:
 			return list( equal_cds_transcripts )
 		else:
