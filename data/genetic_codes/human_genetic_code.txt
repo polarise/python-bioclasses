@@ -1,0 +1,21 @@
+Phenylalanine	Phe	F	UUU,UUC
+Leucine	Leu	L	UUA,UUG,CUU,CUC,CUA,CUG
+Isoleucine	Iso	I	AUU,AUC,AUA
+Methionine	Met	M	AUG
+Valine	Val	V	GUU,GUC,GUA,GUG
+Serine	Ser	S	UCU,UCC,UCA,UCG,AGU,AGC
+Proline	Pro	P	CCU,CCC,CCA,CCG
+Threonine	Thr	T	ACU,ACC,ACA,ACG
+Alanine	Ala	A	GCU,GCC,GCA,GCG
+Tyrosine	Tyr	Y	UAU,UAC
+Stop	-	O	UAA,UAG,UGA
+Histidine	His	H	CAU,CAC
+Glutamine	Gln	Q	CAA,CAG
+Asparagine	Asn	N	AAU,AAC
+Lysine	Lys	K	AAA,AAG
+Aspartic acid	Asp	D	GAU,GAC
+Glutamic acid	Glu	E	GAA,GAG
+Cysteine	Cys	C	UGU,UGC
+Tryptophan	Trp	W	UGG
+Arginine	Arg	R	CGU,CGC,CGA,CGG,AGA,AGG
+Glycine	Gly	G	GGU,GGC,GGA,GGG
