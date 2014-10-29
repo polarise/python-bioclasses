@@ -10,7 +10,7 @@ class FrameshiftTranscript( object ):
 		self.length = length
 		self.frameshift_sites = dict()
 	
-	def add_frameshift_site( self, position, signal, radians_vector=( 2*scipy.pi/3, 2*scipy.pi/3, 2*scipy.pi/3 ) ):
+	def add_frameshift_site( self, position, signal, radians_vector=( 2*scipy.pi/3, 2*scipy.pi/3, 2*scipy.pi/3 ), desig=None ):
 		def frameshift_position_score( x, L ):
 			"""
 			triangular function
@@ -24,7 +24,7 @@ class FrameshiftTranscript( object ):
 		position_score = frameshift_position_score( position, self.length )
 		
 		self.frameshift_sites[position] = FrameshiftSite( ( 0, position ), \
-			( 0, 0 ), signal, self.length, position_score, radians_vector )
+			( 0, 0 ), signal, self.length, position_score, radians_vector, desig )
 	
 	def __repr__( self ):
 		output_str = "Transcript: %s of length %s\n" % ( self.name, self.length )
@@ -74,7 +74,7 @@ class FrameshiftTranscript( object ):
 		present = False
 		for fss in self_fsss:
 			for oss in other_fsss:
-				if p0 <= fss.posscore2proportion( self.length ) <= p1 and fss.radians_vector_f[0] <= theta0 and -tol <=  fss.distance_from_5prime - oss.distance_from_5prime <= tol and fss.signal == oss.signal:
+				if p0 <= fss.posscore2proportion( self.length ) <= p1 and fss.radians_vector_f[0] <= theta0 and -tol <=  fss.distance_from_5prime - oss.distance_from_5prime <= tol and fss.signal == oss.signal and fss.designation == oss.designation:
 					present = True
 		
 		return present
