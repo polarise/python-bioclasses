@@ -14,17 +14,23 @@ class Gene( object ):
 		self.strand = record.strand
 		self.transcripts = dict()
 	
+	#=============================================================================
+	
 	def is_protein_coding( self ):
 		if self.source == "protein_coding":
 			return True
 		else:
 			return False
 	
+	#=============================================================================
+	
 	def region_str( self, zero_based=False ):
 		if zero_based:
 			return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start ) + 1, int( self.end ) + 1 ]))
 		elif not zero_based:
 			return "%s:%s-%s" % ( self.seqname, self.start, self.end )		
+	
+	#=============================================================================
 	
 	def process_record( self, record ):
 		if record.feature == "transcript":
@@ -40,9 +46,13 @@ class Gene( object ):
 		elif record.feature == "stop_codon":
 					self.transcripts[record.group_dict['transcript_id']].process_stop_codon( record )
 	
+	#=============================================================================
+	
 	def __repr__( self ):
 #		return "%s [%s]" % ( self.gene_id, self.region_str())
 		return self.gene_id + " [" + ":".join([ self.seqname, self.start, self.end, self.strand ]) + "]"
+	
+	#=============================================================================
 	
 	def get_protein_coding( self ):
 		PCT = list()
@@ -51,6 +61,8 @@ class Gene( object ):
 				PCT.append( T )
 		
 		return PCT
+	
+	#=============================================================================
 	
 	def get_complete_protein_coding( self ):
 		PCT = self.get_protein_coding()
@@ -111,6 +123,8 @@ class Gene( object ):
 		else:
 			return None
 	
+	#=============================================================================
+	
 	def get_overall_UTR_region( self, transcripts="all", as_region_str=True ):
 		"""
 		transcripts = all|equal_cds
@@ -157,9 +171,3 @@ class Gene( object ):
 				return "%s:%s-%s" % ( self.seqname, overall_utr_start, overall_utr_end )
 			elif not as_region_str:
 				return self.seqname, str( overall_utr_start ), str( overall_utr_end )
-		
-			
-		
-
-
-

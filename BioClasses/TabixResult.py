@@ -4,6 +4,7 @@ import sys
 import pysam
 from scipy import stats
 from GTFRecord import *
+from Utils import msg
 
 class TabixResult( object ):
 	def __init__( self, region, tabixfile, filetype="bed", store_tabix_result=False, verbose=False ):
@@ -16,7 +17,7 @@ class TabixResult( object ):
 			tabix_result = tabixfile.fetch( region )
 		except ValueError:
 			if verbose:
-				print >> sys.stderr, "Warning: unable to create iterator for %s" % region
+				msg( "Warning: unable to create iterator for %s" % region )
 			tabix_result = list()
 		if store_tabix_result:
 			self.tabix_result = tabix_result
@@ -30,6 +31,8 @@ class TabixResult( object ):
 		else:
 			raise NotImplementedError( "handler for other filetypes not implemented" )
 	
+	#=============================================================================
+	
 	def extract_records( self, tabix_result ):
 		records = list()
 		for row in tabix_result:
@@ -37,12 +40,16 @@ class TabixResult( object ):
 			records.append( GTFRecord( *l ))
 		
 		return records
-				
+	
+	#=============================================================================
+	
 	def process_region_str( self, region ):
 		chrom, start_end = region.split( ":" )
 		start, end = map( int, start_end.split( "-" ))
 		
 		return chrom, start, end
+	
+	#=============================================================================
 	
 	def compute_stats( self, tabix_result ):
 		count_data = dict()
@@ -69,6 +76,8 @@ class TabixResult( object ):
 		except ZeroDivisionError:
 			density = "Inf"
 		return count, density, serial_data
+	
+	#=============================================================================
 	
 	def compute_peaks( self, density, n=21, pvalue_thresh=0.01, excess=5, triplet_fix=False ):
 		# put n//2 zeros at the beginning...
