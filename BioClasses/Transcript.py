@@ -56,6 +56,15 @@ class Transcript( object ):
 	
 	#=============================================================================
 	
+	def get_cds_unspliced_length( self ):
+		length = 0
+		if self.start_codon is not None and self.stop_codon is not None:
+			if self.strand == "+":
+				length = int( self.stop_codon ) + 2 - int( self.start_codon ) + 1
+			elif self.strand == "-":
+				length = int( self.start_codon ) + 2 - int( self.stop_codon ) + 1
+		return length
+	#=============================================================================
 	def get_cds_length( self ):
 		length = 0
 		for E in self.CDS:
@@ -83,9 +92,25 @@ class Transcript( object ):
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start_codon ), int( self.end ) - 1] ))
 			elif not zero_based:
 				return "%s:%s-%s" % ( self.seqname, str( int( self.start_codon ) + 1 ), self.end )
-	
+	#=============================================================================	
+	def length_of_unspliced_5utr( self ):
+		unspliced_length = 0
+		if self.start_codon is not None:
+			if self.strand == "+":
+				unspliced_length = int( self.start_codon ) - int( self.start )
+			elif self.strand == "-":
+				unspliced_length = int( self.end ) - int( self.start_codon ) - 2
+		return unspliced_length
 	#=============================================================================
-	
+	def length_of_unspliced_3utr( self ):
+		unspliced_length = 0
+		if self.stop_codon is not None:
+			if self.strand == "+":
+				unspliced_length = int( self.end ) - int( self.stop_codon ) - 2
+			elif self.strand == "-":
+				unspliced_length = int( self.stop_codon ) - int( self.start )
+		return unspliced_length
+	#=============================================================================
 	def length_of_spliced_5utr( self ):
 		"""
 		return the spliced length of the 5'UTR
@@ -129,6 +154,40 @@ class Transcript( object ):
 					else:
 						break
 					# spliced_length will be zero (0)					
+		
+		return spliced_length
+	
+	#=============================================================================
+	
+	def length_of_spliced_3utr( self ):
+		"""
+		return th spliced length of the 3'UTR
+		"""
+		spliced_length = 0
+		
+		if self.stop_codon is not None:
+			if self.strand == "+":
+				for exon_number in xrange( len( self.exons ), 0, -1 ):
+					E = self.exons[exon_number]
+					# case (i)
+					if int( E.start ) > int( self.stop_codon ) + 2:
+						spliced_length += E.length()
+					# case (ii)
+					elif int( E.start ) < int( self.stop_codon ) + 2 and int( E.end ) > int( self.stop_codon ):
+						spliced_length += int( E.end ) - int( self.stop_codon ) - 2
+					else:
+						break
+			elif self.strand == "-":
+				for exon_number in xrange( len( self.exons ), 0, -1 ):
+					E = self.exons[exon_number]
+					# case (i)
+					if int( E.start ) < int( self.stop_codon ) and int( E.end ) < int( self.stop_codon ):
+						spliced_length += E.length()
+					# case (ii)
+					elif int( E.start ) < int( self.stop_codon ) and int( E.end ) > int( self.stop_codon ):
+						spliced_length += int( self.stop_codon ) - int( E.start )
+					else:
+						break
 		
 		return spliced_length
 	
