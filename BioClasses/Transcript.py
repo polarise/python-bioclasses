@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import sys
 from Exon import *
+from UTR import *
 
 class Transcript( object ):
 	def __init__( self, record ):
@@ -12,7 +13,7 @@ class Transcript( object ):
 		self.strand = record.strand
 		self.exons = dict()
 		self.CDS = list() # exons by the way
-		self.UTR = dict() # exons by the way
+		self.UTR = list() # exons by the way
 		self.start_codon = None
 		self.stop_codon = None
 	
@@ -205,7 +206,7 @@ class Transcript( object ):
 	#=============================================================================
 		
 	def process_UTR( self, record ):
-		pass
+		self.UTR.append( UTR( record ))
 	
 	#=============================================================================	
 	
@@ -236,4 +237,25 @@ class Transcript( object ):
 			return True
 		else:
 			return False
+	
+	#=============================================================================
+	
+	def designate_UTRs( self ):
+		# get the CDS boundaries
+		cds_region = self.cds_region_str()
+		cds_start_end = cds_region.split( ":" )[1]
+		cds_start, cds_end = map( int, cds_start_end.split( "-" ))
 		
+		# compare coordinates of each UTR exon to the cds start/end
+		for utr in self.UTR:
+			if self.strand == "+":
+				if int( utr.end ) <= cds_start:
+					utr.terminus = "5"
+				elif int( utr.start ) >= cds_end:
+					utr.terminus = "3"
+			elif self.strand == "-":
+				if int( utr.start ) >= cds_start:
+					utr.terminus = "5"
+				elif int( utr.end ) <= cds_end:
+					utr.terminus = "3"
+			
