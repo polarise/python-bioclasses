@@ -171,3 +171,9 @@ class Gene( object ):
 				return "%s:%s-%s" % ( self.seqname, overall_utr_start, overall_utr_end )
 			elif not as_region_str:
 				return self.seqname, str( overall_utr_start ), str( overall_utr_end )
+	#=============================================================================
+	
+	def post_processing( self ):
+		for transcript_id,T in self.transcripts.iteritems():
+			# designate UTRs as either 5' or 3'
+			T.designate_UTRs()

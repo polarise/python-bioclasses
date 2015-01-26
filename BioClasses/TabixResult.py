@@ -79,7 +79,7 @@ class TabixResult( object ):
 	
 	#=============================================================================
 	
-	def compute_peaks( self, density, n=21, pvalue_thresh=0.01, excess=5, triplet_fix=False ):
+	def compute_peaks( self, density, n=21, pvalue_thresh=0.01, excess=5, triplet_fix=False, min_density=0 ):
 		# put n//2 zeros at the beginning...
 		self.peak_data = [0]*(n//2)
 		self.peak_pvalues = [1]*(n//2)
@@ -89,7 +89,7 @@ class TabixResult( object ):
 			x_sum = sum([ c[j] for j in xrange( i, i + n )])
 			x_bar = x_sum/n
 			
-			if x_bar > excess*density:
+			if x_bar > excess*density and density > min_density:
 				self.peak_data.append( 1 )
 				if triplet_fix:
 					pvalue = stats.poisson.pmf( max( c[i+(n//2)-1], c[i+(n//2)], c[i+(n//2)+1] ), mu=density )
