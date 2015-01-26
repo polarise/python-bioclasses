@@ -7,6 +7,7 @@ from Exon import *
 class Gene( object ):
 	def __init__( self, record ):
 		self.gene_id = record.group_dict['gene_id']
+		self.gene_name = record.group_dict['gene_name']
 		self.seqname = record.seqname
 		self.source = record.source
 		self.start = record.start
