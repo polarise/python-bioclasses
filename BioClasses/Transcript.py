@@ -240,22 +240,25 @@ class Transcript( object ):
 	
 	#=============================================================================
 	
-	def designate_UTRs( self ):
-		# get the CDS boundaries
-		cds_region = self.cds_region_str()
-		cds_start_end = cds_region.split( ":" )[1]
-		cds_start, cds_end = map( int, cds_start_end.split( "-" ))
-		
+	def designate_UTRs( self ):		
 		# compare coordinates of each UTR exon to the cds start/end
 		for utr in self.UTR:
 			if self.strand == "+":
-				if int( utr.end ) <= cds_start:
-					utr.terminus = "5"
-				elif int( utr.start ) >= cds_end:
-					utr.terminus = "3"
+				if self.start_codon is not None:
+					cds_start = int( self.start_codon )
+					if int( utr.end ) <= cds_start:
+						utr.terminus = "5"
+				if self.stop_codon is not None:
+					cds_end = int( self.stop_codon ) + 2
+					if int( utr.start ) >= cds_end:
+						utr.terminus = "3"
 			elif self.strand == "-":
-				if int( utr.start ) >= cds_start:
-					utr.terminus = "5"
-				elif int( utr.end ) <= cds_end:
-					utr.terminus = "3"
+				if self.start_codon is not None:
+					cds_start = int( self.start_codon )
+					if int( utr.start ) >= cds_start:
+						utr.terminus = "5"
+				if self.stop_codon is not None:
+					cds_end = int( self.stop_codon ) - 2
+					if int( utr.end ) <= cds_end:
+						utr.terminus = "3"
 			
