@@ -65,6 +65,7 @@ class Transcript( object ):
 			elif self.strand == "-":
 				length = int( self.start_codon ) + 2 - int( self.stop_codon ) + 1
 		return length
+	
 	#=============================================================================
 	def get_cds_length( self ):
 		length = 0
@@ -208,7 +209,17 @@ class Transcript( object ):
 	def process_UTR( self, record ):
 		self.UTR.append( UTR( record ))
 	
-	#=============================================================================	
+	#=============================================================================
+
+	def process_5UTR( self, record ):
+		self.UTR.append( UTR( record, terminus="5" ))
+	
+	#=============================================================================
+	
+	def process_3UTR( self, record ):
+		self.UTR.append( UTR( record, terminus="3" ))
+	
+	#=============================================================================
 	
 	def process_start_codon( self, record ):
 		self.start_codon = record.start
@@ -243,6 +254,8 @@ class Transcript( object ):
 	def designate_UTRs( self ):		
 		# compare coordinates of each UTR exon to the cds start/end
 		for utr in self.UTR:
+			if utr.terminus is not None:
+				continue # don't waste time
 			if self.strand == "+":
 				if self.start_codon is not None:
 					cds_start = int( self.start_codon )

@@ -1,3 +1,13 @@
+27-01-2015
+
+0.1.5
+- removed GTF record processing dependence on 'gene' row
+- added handlers for records of feature type '5UTR' and '3UTR' to Gene.process_record()
+- added verbose handler for records of feature type 'gene' to Gene.process_record()
+- made UTR terminus designation conditional in Transcript.designate_UTRs()
+- minor changes to Utils.PrintStatic()
+- added keyword variable 'terminus' to UTR class
+
 28-10-2014
 
 Initial arrangement into a Python package.

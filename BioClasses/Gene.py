@@ -3,6 +3,7 @@ import sys
 import itertools
 from Transcript import *
 from Exon import *
+from Utils import PrintStatic,msg
 
 class Gene( object ):
 	def __init__( self, record ):
@@ -34,18 +35,26 @@ class Gene( object ):
 	#=============================================================================
 	
 	def process_record( self, record ):
-		if record.feature == "transcript":
+		if record.feature == "gene":
+			PrintStatic( "Processing gene: %s[%s]" % ( record.group_dict['gene_id'], record.group_dict['gene_name'] ))
+		elif record.feature == "transcript":
 			self.transcripts[record.group_dict['transcript_id']] = Transcript( record )
 		elif record.feature == "exon":
 			self.transcripts[record.group_dict['transcript_id']].process_exon( record )
 		elif record.feature == "CDS":
 			self.transcripts[record.group_dict['transcript_id']].process_CDS( record )
 		elif record.feature == "UTR":
-			self.transcripts[record.group_dict['transcript_id']].process_UTR( record )	
+			self.transcripts[record.group_dict['transcript_id']].process_UTR( record )
+		elif record.feature == "5UTR":
+			self.transcripts[record.group_dict['transcript_id']].process_5UTR( record )
+		elif record.feature == "3UTR":
+			self.transcripts[record.group_dict['transcript_id']].process_3UTR( record )
 		elif record.feature == "start_codon":
-					self.transcripts[record.group_dict['transcript_id']].process_start_codon( record )	
+			self.transcripts[record.group_dict['transcript_id']].process_start_codon( record )	
 		elif record.feature == "stop_codon":
-					self.transcripts[record.group_dict['transcript_id']].process_stop_codon( record )
+			self.transcripts[record.group_dict['transcript_id']].process_stop_codon( record )
+		else:
+			msg( "Unknown feature: %s" % record.feature )
 	
 	#=============================================================================
 	
@@ -73,6 +82,8 @@ class Gene( object ):
 				complete_PCT.append( P )
 		
 		return complete_PCT
+	
+	#=============================================================================
 	
 	def get_equal_cds( self, best=False ):
 		"""
@@ -172,6 +183,7 @@ class Gene( object ):
 				return "%s:%s-%s" % ( self.seqname, overall_utr_start, overall_utr_end )
 			elif not as_region_str:
 				return self.seqname, str( overall_utr_start ), str( overall_utr_end )
+			
 	#=============================================================================
 	
 	def post_processing( self ):

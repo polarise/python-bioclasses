@@ -24,4 +24,12 @@ class Exon( object ):
 	
 	def length( self ):
 		return int( self.end ) - int( self.start ) + 1
+	
+	def __cmp__( self, other ):
+		if int( self.start ) < other:
+			return -1
+		elif int( self.start ) == other:
+			return 0
+		elif int( self.start ) > other:
+			return 1
 		

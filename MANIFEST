@@ -25,6 +25,7 @@ BioClasses/TabixResult.py
 BioClasses/Transcript.py
 BioClasses/TransitionMatrix.py
 BioClasses/Tree.py
+BioClasses/UTR.py
 BioClasses/Utils.py
 BioClasses/WorkerProcess.py
 BioClasses/__init__.py

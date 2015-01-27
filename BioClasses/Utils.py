@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import sys
 import numpy as np
 import math
@@ -9,9 +10,10 @@ def PrintStatic( line, stderr=True ):
 	"""
 	if stderr:
 		sys.stderr.write( "\r%s".ljust( 20 ) % line )
+		sys.stderr.flush()
 	else:
 		sys.stdout.write( "\r%s".ljust( 20 ) % line )
-	sys.stderr.flush()
+		sys.stdout.flush()
 	
 def msg( msg, newline=True ):
 	"""

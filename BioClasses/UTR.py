@@ -2,13 +2,13 @@
 import sys
 
 class UTR( object ):
-	def __init__( self, record ):
+	def __init__( self, record, terminus=None ):
 		self.source = record.source
 		self.seqname = record.seqname
 		self.start = record.start
 		self.end = record.end
 		self.strand = record.strand
-		self.terminus = None # 5 for 5' UTR or 3' for 3' UTR
+		self.terminus = terminus # '5' for 5' UTR or '3' for 3' UTR
 	
 	def region_str( self, zero_based=False ):
 		if zero_based:

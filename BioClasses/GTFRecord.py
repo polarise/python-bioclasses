@@ -10,7 +10,7 @@ class GTFRecord( object ):
 		self.end = end
 		self.score = score
 		self.strand = strand
-		self.frame = frame
+		self.frame = frame # coding frame! ;-)
 		self.group = group
 		self.group_dict = self.process_group( group )
 	
