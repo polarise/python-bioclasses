@@ -1,3 +1,8 @@
+29-01-2015
+
+0.1.5
+- fixed a bug in Transcript class that excluded UTRs of transcripts without start/stop codons (because the start/stop codons, instead of the CDS boundaries) were exclusively used to label 5'/3' ends)
+
 27-01-2015
 
 0.1.5

@@ -44,16 +44,49 @@ class Transcript( object ):
 	#=============================================================================
 	
 	def cds_region_str( self, zero_based=False ):
+		self.CDS.sort() # invoke the __cmp__() method of each exon
 		if self.strand == "+":
+			if self.start_codon is not None:
+				cds_start = int( self.start_codon )
+			elif len( self.CDS ) > 0:
+				cds_start = int( self.CDS[0].start )
+			else:
+				cds_start = int( self.start )
+                        
+			if self.stop_codon is not None:
+				cds_end = int ( self.stop_codon )
+			elif len( self.CDS ) > 0:
+				cds_end = int( self.CDS[-1].end )
+			else:
+				cds_end = int( self.end )
+			
 			if zero_based:
-				return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start_codon ) - 1, int( self.stop_codon ) + 1 ]))
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start - 1, cds_end + 1 ] )) 
+				#return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start_codon ) - 1, int( self.stop_codon ) + 1 ]))
 			elif not zero_based:
-				return "%s:%s-%s" % ( self.seqname, self.start_codon , str( int( self.stop_codon ) + 2 ))
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start, cds_end + 2 ] ))	
+				#return "%s:%s-%s" % ( self.seqname, self.start_codon , str( int( self.stop_codon ) + 2 ))
 		elif self.strand == "-":
+			if self.start_codon is not None:
+				cds_start = int( self.start_codon )
+			elif len( self.CDS ) > 0:
+				cds_start = int( self.CDS[-1].end )
+			else:
+				cds_start = int( self.end )
+
+			if self.stop_codon is not None:
+				cds_end = int( self.stop_codon )
+			elif len( self.CDS ) > 0:
+				cds_end = int( self.CDS[-1].start )
+			else:
+				cds_end = int( self.start )
+
 			if zero_based:
-				return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.stop_codon ) - 3, int( self.start_codon ) - 1 ]))
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_end - 3, cds_start - 1 ]))
+				#return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.stop_codon ) - 3, int( self.start_codon ) - 1 ]))
 			elif not zero_based:
-				return "%s:%s-%s" % ( self.seqname, str( int( self.stop_codon ) - 2 ), self.start_codon )
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_end - 2, cds_start ]))	
+				#return "%s:%s-%s" % ( self.seqname, str( int( self.stop_codon ) - 2 ), self.start_codon )
 	
 	#=============================================================================
 	
@@ -251,27 +284,44 @@ class Transcript( object ):
 	
 	#=============================================================================
 	
-	def designate_UTRs( self ):		
+	def designate_UTRs( self, zero_based=False ):
 		# compare coordinates of each UTR exon to the cds start/end
+		cds_region_str = self.cds_region_str( zero_based=zero_based )
+		cds_seqname,cds_start_end = cds_region_str.split( ":" )
+		cds_start_inferred,cds_end_inferred = map( int, cds_start_end.split( "-" ))
 		for utr in self.UTR:
 			if utr.terminus is not None:
 				continue # don't waste time
 			if self.strand == "+":
 				if self.start_codon is not None:
 					cds_start = int( self.start_codon )
-					if int( utr.end ) <= cds_start:
-						utr.terminus = "5"
+				else:
+					cds_start = cds_start_inferred
+				
+				if int( utr.end ) <= cds_start:
+					utr.terminus = "5"
+				
 				if self.stop_codon is not None:
 					cds_end = int( self.stop_codon ) + 2
-					if int( utr.start ) >= cds_end:
+				else:
+					cds_end = cds_end_inferred
+				
+				if int( utr.start ) >= cds_end:
 						utr.terminus = "3"
 			elif self.strand == "-":
 				if self.start_codon is not None:
 					cds_start = int( self.start_codon )
-					if int( utr.start ) >= cds_start:
+				else:
+					cds_start = cds_end_inferred
+			
+				if int( utr.start ) >= cds_start:
 						utr.terminus = "5"
+			
 				if self.stop_codon is not None:
 					cds_end = int( self.stop_codon ) - 2
-					if int( utr.end ) <= cds_end:
-						utr.terminus = "3"
+				else:
+					cds_end = cds_start_inferred
+
+				if int( utr.end ) <= cds_end:
+					utr.terminus = "3"
 			

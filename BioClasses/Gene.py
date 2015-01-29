@@ -34,7 +34,7 @@ class Gene( object ):
 	
 	#=============================================================================
 	
-	def process_record( self, record ):
+	def process_record( self, record, verbose=False ):
 		if record.feature == "gene":
 			PrintStatic( "Processing gene: %s[%s]" % ( record.group_dict['gene_id'], record.group_dict['gene_name'] ))
 		elif record.feature == "transcript":
@@ -54,7 +54,8 @@ class Gene( object ):
 		elif record.feature == "stop_codon":
 			self.transcripts[record.group_dict['transcript_id']].process_stop_codon( record )
 		else:
-			msg( "Unknown feature: %s" % record.feature )
+			if verbose:
+				msg( "Unknown feature: %s" % record.feature )
 	
 	#=============================================================================
 	
@@ -186,7 +187,7 @@ class Gene( object ):
 			
 	#=============================================================================
 	
-	def post_processing( self ):
+	def post_processing( self, zero_based=False ):
 		for transcript_id,T in self.transcripts.iteritems():
 			# designate UTRs as either 5' or 3'
-			T.designate_UTRs()
+			T.designate_UTRs( zero_based=zero_based )
