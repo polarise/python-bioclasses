@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import math
 import scipy as sp
+import time
 
 def PrintStatic( line, stderr=True ):
 	"""
@@ -15,14 +16,20 @@ def PrintStatic( line, stderr=True ):
 		sys.stdout.write( "\r%s".ljust( 20 ) % line )
 		sys.stdout.flush()
 	
-def msg( msg, newline=True ):
+def msg( mesg, newline=True, show_time=True ):
 	"""
 	Neat function to write error messages to the screen
 	"""
-	if newline:
-		print >> sys.stderr, msg
+	if show_time:
+		if newline:
+			print >> sys.stderr, "[%s] %s" % ( time.ctime( time.time()), mesg )
+		else:
+			print >> sys.stderr, "[%s] %s" % ( time.ctime( time.time()), mesg ),
 	else:
-		print >> sys.stderr, msg,
+		if newline:
+			print >> sys.stderr, mesg
+		else:
+			print >> sys.stderr, mesg,
 
 def savgol(x, window_size=3, order=2, deriv=0, rate=1):
 	"""

@@ -2,6 +2,7 @@
 import sys
 from Exon import *
 from UTR import *
+from TSS_Sequence import *
 
 class Transcript( object ):
 	def __init__( self, record ):
@@ -16,6 +17,10 @@ class Transcript( object ):
 		self.UTR = list() # exons by the way
 		self.start_codon = None
 		self.stop_codon = None
+		if self.strand == "+":
+			self.TSS_Sequence = TSS_Sequence( self.seqname, self.start )
+		elif self.strand == "-":
+			self.TSS_Sequence = TSS_Sequence( self.seqname, self.end )
 	
 	#=============================================================================
 	

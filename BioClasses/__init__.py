@@ -24,3 +24,5 @@ from TabixResult import *
 from FrameshiftTranscript import *
 from WorkerProcess import *
 from ParallelTask import *
+from TSS_Sequence import *
+from PSWM import *

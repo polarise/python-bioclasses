@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
 	name='BioClasses',
-	version='0.1.5',
+	version='0.1.6',
 	packages=["BioClasses"],
 	data_files=[("genetic_codes", \
 ["data/genetic_codes/euplotid_genetic_code.txt", \
