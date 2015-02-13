@@ -1,3 +1,9 @@
+13-02-2015
+
+0.1.6
+- added two classes to compute TOP (Terminal OligoPyrimidine) scores: TSS_Sequence and PSWM (position-specific weight matrix)
+- included a test for how these classes work
+
 29-01-2015
 
 0.1.5
