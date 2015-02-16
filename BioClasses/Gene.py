@@ -8,7 +8,10 @@ from Utils import PrintStatic,msg
 class Gene( object ):
 	def __init__( self, record ):
 		self.gene_id = record.group_dict['gene_id']
-		self.gene_name = record.group_dict['gene_name']
+		try:
+			self.gene_name = record.group_dict['gene_name']
+		except KeyError:
+			self.gene_name = record.group_dict['gene_id']
 		self.seqname = record.seqname
 		self.source = record.source
 		self.start = record.start

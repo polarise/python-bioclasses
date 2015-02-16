@@ -92,7 +92,17 @@ class Transcript( object ):
 			elif not zero_based:
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_end - 2, cds_start ]))	
 				#return "%s:%s-%s" % ( self.seqname, str( int( self.stop_codon ) - 2 ), self.start_codon )
-	
+		else:
+			"""
+			Cufflinks returns novel transcripts without strand information
+			"""
+			cds_start = int( self.start )
+			cds_end = int( self.end )
+			
+			if zero_based:
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start - 1, cds_end + 1 ] )) 
+			elif not zero_based:
+				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start, cds_end + 2 ] ))
 	#=============================================================================
 	
 	def get_cds_unspliced_length( self ):
@@ -292,6 +302,7 @@ class Transcript( object ):
 	def designate_UTRs( self, zero_based=False ):
 		# compare coordinates of each UTR exon to the cds start/end
 		cds_region_str = self.cds_region_str( zero_based=zero_based )
+		#print >> sys.stderr, self.transcript_id,cds_region_str,self.start,self.end
 		cds_seqname,cds_start_end = cds_region_str.split( ":" )
 		cds_start_inferred,cds_end_inferred = map( int, cds_start_end.split( "-" ))
 		for utr in self.UTR:
