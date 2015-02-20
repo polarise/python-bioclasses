@@ -42,6 +42,7 @@ data/transition_matrices/euplotid_transition_matrix.pic
 data/transition_matrices/homo_transition_matrix.pic
 data/transition_matrices/tetrahymena_transition_matrix.pic
 test/test_Branch.py
+test/test_Exon.py
 test/test_GeneticCode.py
 test/test_GlimmerORF.py
 test/test_LeafCounter.py
@@ -52,9 +53,11 @@ test/test_Sequence2.py
 test/test_Sequence3.py
 test/test_TSS_Sequence.py
 test/test_TabixResult.py
+test/test_Transcript.py
 test/test_TransitionMatrix.py
 test/test_Tree.py
 test/test_Tree2.py
+test/test_UTR.py
 test/test_frameshift_signals.py
 test/test_paths.py
 test/test_peakfinder.py

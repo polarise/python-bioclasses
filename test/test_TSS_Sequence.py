@@ -50,7 +50,9 @@ def main():
 			
 			print T.TSS_Sequence
 			c += 1
-	# 
+	
+	# close the fastafile 
+	fastafile.close()
 
 if __name__ == "__main__":
 	main()

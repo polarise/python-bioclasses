@@ -22,14 +22,15 @@ def msg( mesg, newline=True, show_time=True ):
 	"""
 	if show_time:
 		if newline:
-			print >> sys.stderr, "[%s] %s" % ( time.ctime( time.time()), mesg )
+			sys.stderr.write( "[%s] %s\n" % ( time.ctime( time.time()), mesg ))
 		else:
-			print >> sys.stderr, "[%s] %s" % ( time.ctime( time.time()), mesg ),
+			sys.stderr.write( "[%s] %s" % ( time.ctime( time.time()), mesg ))
 	else:
 		if newline:
-			print >> sys.stderr, mesg
+			sys.stderr( mesg + "\n" )
 		else:
-			print >> sys.stderr, mesg,
+			sys.stderr( mesg )
+	sys.stderr.flush()
 
 def savgol(x, window_size=3, order=2, deriv=0, rate=1):
 	"""

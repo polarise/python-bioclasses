@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from __future__ import division
 import sys
 from Exon import *
 from UTR import *
@@ -49,49 +50,36 @@ class Transcript( object ):
 	#=============================================================================
 	
 	def cds_region_str( self, zero_based=False ):
-		self.CDS.sort() # invoke the __cmp__() method of each exon
 		if self.strand == "+":
 			if self.start_codon is not None:
 				cds_start = int( self.start_codon )
-			elif len( self.CDS ) > 0:
-				cds_start = int( self.CDS[0].start )
 			else:
 				cds_start = int( self.start )
                         
 			if self.stop_codon is not None:
 				cds_end = int ( self.stop_codon )
-			elif len( self.CDS ) > 0:
-				cds_end = int( self.CDS[-1].end )
 			else:
 				cds_end = int( self.end )
 			
 			if zero_based:
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start - 1, cds_end + 1 ] )) 
-				#return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.start_codon ) - 1, int( self.stop_codon ) + 1 ]))
 			elif not zero_based:
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_start, cds_end + 2 ] ))	
-				#return "%s:%s-%s" % ( self.seqname, self.start_codon , str( int( self.stop_codon ) + 2 ))
 		elif self.strand == "-":
 			if self.start_codon is not None:
 				cds_start = int( self.start_codon )
-			elif len( self.CDS ) > 0:
-				cds_start = int( self.CDS[-1].end )
 			else:
 				cds_start = int( self.end )
 
 			if self.stop_codon is not None:
 				cds_end = int( self.stop_codon )
-			elif len( self.CDS ) > 0:
-				cds_end = int( self.CDS[-1].start )
 			else:
 				cds_end = int( self.start )
 
 			if zero_based:
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_end - 3, cds_start - 1 ]))
-				#return "%s:%s-%s" % tuple( map( str, [ self.seqname, int( self.stop_codon ) - 3, int( self.start_codon ) - 1 ]))
 			elif not zero_based:
 				return "%s:%s-%s" % tuple( map( str, [ self.seqname, cds_end - 2, cds_start ]))	
-				#return "%s:%s-%s" % ( self.seqname, str( int( self.stop_codon ) - 2 ), self.start_codon )
 		else:
 			"""
 			Cufflinks returns novel transcripts without strand information
@@ -302,42 +290,94 @@ class Transcript( object ):
 	def designate_UTRs( self, zero_based=False ):
 		# compare coordinates of each UTR exon to the cds start/end
 		cds_region_str = self.cds_region_str( zero_based=zero_based )
-		#print >> sys.stderr, self.transcript_id,cds_region_str,self.start,self.end
+#		print >> sys.stderr, self.transcript_id,self.strand,cds_region_str,self.start,self.end
 		cds_seqname,cds_start_end = cds_region_str.split( ":" )
 		cds_start_inferred,cds_end_inferred = map( int, cds_start_end.split( "-" ))
+		
 		for utr in self.UTR:
 			if utr.terminus is not None:
 				continue # don't waste time
-			if self.strand == "+":
-				if self.start_codon is not None:
-					cds_start = int( self.start_codon )
-				else:
-					cds_start = cds_start_inferred
+			else:
+				if self.strand == "+":
+					# set cds_start position
+					if self.start_codon is not None:
+						cds_start = int( self.start_codon )
+					else:
+						cds_start = cds_start_inferred
 				
-				if int( utr.end ) <= cds_start:
-					utr.terminus = "5"
+					# set cds_end position
+					if self.stop_codon is not None:
+						cds_end = int( self.stop_codon ) + 2
+					else:
+						cds_end = cds_end_inferred
 				
-				if self.stop_codon is not None:
-					cds_end = int( self.stop_codon ) + 2
-				else:
-					cds_end = cds_end_inferred
-				
-				if int( utr.start ) >= cds_end:
+					# check if 5'
+					if int( utr.end ) <= cds_start:
+						utr.terminus = "5"				
+					# check if 3'
+					elif int( utr.start ) >= cds_end:
 						utr.terminus = "3"
-			elif self.strand == "-":
-				if self.start_codon is not None:
-					cds_start = int( self.start_codon )
-				else:
-					cds_start = cds_end_inferred
-			
-				if int( utr.start ) >= cds_start:
-						utr.terminus = "5"
-			
-				if self.stop_codon is not None:
-					cds_end = int( self.stop_codon ) - 2
-				else:
-					cds_end = cds_start_inferred
+				elif self.strand == "-":
+					# set cds_start position
+					if self.start_codon is not None:
+						cds_start = int( self.start_codon )
+					else:
+						cds_start = cds_end_inferred
 
-				if int( utr.end ) <= cds_end:
-					utr.terminus = "3"
+					# set cds_end position
+					if self.stop_codon is not None:
+						cds_end = int( self.stop_codon )
+					else:
+						cds_end = cds_start_inferred
+
+					# check if 5'
+					if int( utr.start ) >= cds_start:
+						utr.terminus = "5"
+					# check if 3'
+					elif int( utr.end ) <= cds_end:
+						utr.terminus = "3"
+	
+	def compute_UTR_GC_content( self, fastafile, five=True, three=True ):
+		"""
+		First get GC content for each UTR exon
+		Next compute separately for 5' and 3' exons
+		"""
+		# make sure that the UTRs are designated
+		self.designate_UTRs()
+		
+		five_GC_percent = 0
+		three_GC_percent = 0
+		
+		five_sequence = ""
+		count_fives = 0
+		if five:
+			for utr in self.UTR:
+				if utr.terminus == "5":
+					five_sequence += utr.get_sequence( fastafile )
+					count_fives += 1
 			
+			try:
+				five_GC_percent = ( five_sequence.upper().count( 'G' ) + five_sequence.upper().count( 'C' ))/len( five_sequence )*100
+			except ZeroDivisionError:
+				if count_fives == 0:
+					five_GC_percent = 0
+				else:
+					raise ValueError( "Unable to extract 5' UTR sequence in %s" % self.transcript_id )
+		
+		three_sequence = ""
+		count_threes = 0
+		if three:
+			for utr in self.UTR:
+				if utr.terminus == "3":
+					three_sequence += utr.get_sequence( fastafile )
+					count_threes += 1
+			
+			try:
+				three_GC_percent = ( three_sequence.upper().count( 'G' ) + three_sequence.upper().count( 'C' ))/len( three_sequence )*100
+			except ZeroDivisionError:
+				if count_threes == 0:
+					three_GC_percent = 0
+				else:
+					raise ValueError( "Unable to extract 3' UTR sequence in %s" % self.transcript_id )
+		
+		return five_GC_percent,three_GC_percent

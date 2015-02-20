@@ -6,6 +6,19 @@ from scipy import stats
 from GTFRecord import *
 from Utils import msg
 
+"""
+This class needs to be redesigned to cater for standard types (GTF, BED, etc)
+as well as custom types. Something like the following inheritance structure:
+
++ TabixResult
+	+-GTFTabixResult
+	+-BEDTabixResult
+	+-CustomTabixResult
+	+-...
+	:
+	+-..
+"""
+
 class TabixResult( object ):
 	def __init__( self, region, tabixfile, filetype="bed", store_tabix_result=False, verbose=False ):
 		"""
@@ -14,7 +27,7 @@ class TabixResult( object ):
 		self.region = region
 		self.tabixfile = tabixfile
 		try:
-			tabix_result = tabixfile.fetch( region )
+			tabix_result = tabixfile.fetch( region=region )
 		except ValueError:
 			if verbose:
 				msg( "Warning: unable to create iterator for %s" % region )
