@@ -26,6 +26,7 @@ class TabixResult( object ):
 		"""
 		self.region = region
 		self.tabixfile = tabixfile
+		self.filetype = filetype
 		try:
 			tabix_result = tabixfile.fetch( region=region )
 		except ValueError:
@@ -38,6 +39,9 @@ class TabixResult( object ):
 		self.length = ( self.end - self.start ) + 1
 		if filetype == "bed":
 			self.count, self.density, self.serial_data = self.compute_stats( tabix_result )
+		elif filetype == "bedcustom":
+			self.records = self.extract_records( tabix_result )
+			self.record_count = len( self.records )
 		elif filetype == "gtf" or filetype == "gff":
 			self.records = self.extract_records( tabix_result )
 			self.record_count = len( self.records )
@@ -48,9 +52,14 @@ class TabixResult( object ):
 	
 	def extract_records( self, tabix_result ):
 		records = list()
-		for row in tabix_result:
-			l = row.strip( "\n" ).split( "\t" )
-			records.append( GTFRecord( *l ))
+		if self.filetype == "gtf" or self.filetype == "gff":
+			for row in tabix_result:
+				l = row.strip( "\n" ).split( "\t" )
+				records.append( GTFRecord( *l ))
+		elif self.filetype == "bed" or self.filetype == "bedcustom":
+			for row in tabix_result:
+				l = row.strip( "\n" ).split( "\t" )
+				records.append( l )
 		
 		return records
 	
