@@ -27,9 +27,9 @@ def msg( mesg, newline=True, show_time=True ):
 			sys.stderr.write( "[%s] %s" % ( time.ctime( time.time()), mesg ))
 	else:
 		if newline:
-			sys.stderr( mesg + "\n" )
+			sys.stderr.write( mesg + "\n" )
 		else:
-			sys.stderr( mesg )
+			sys.stderr.write( mesg )
 	sys.stderr.flush()
 
 def savgol(x, window_size=3, order=2, deriv=0, rate=1):
